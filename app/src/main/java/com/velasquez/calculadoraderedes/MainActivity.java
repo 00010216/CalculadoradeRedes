@@ -12,17 +12,18 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
     EditText edit_ip, edit_mask;
     TextView text_netmask, text_network, text_broadcast, text_hosts;
+    TextView text_netpart, text_hostpart;
     Button btn_calcular;
-    String network, broadcast;
+    String network, broadcast, host;
     int mask[] = new int[4];
     int wildcard[] = new int[4];
     int mip[] = new int[4];
 
     private final String IP_ADDRESS_PATTERN =
             "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\." +
-            "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\." +
-            "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\." +
-            "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$";
+                    "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\." +
+                    "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\." +
+                    "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,9 +37,10 @@ public class MainActivity extends AppCompatActivity {
         text_network = findViewById(R.id.text_network);
         text_broadcast = findViewById(R.id.text_broadcast);
         text_hosts = findViewById(R.id.text_hosts);
+        text_netpart = findViewById(R.id.text_netpart);
+        text_hostpart = findViewById(R.id.text_hostpart);
     }
 
-    //Testing
     View.OnClickListener onClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -47,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
                 getNetMask();
                 getNetwork();
                 getBroadcast();
-                text_hosts.setText("Hosts: " + (int)Math.pow(2, 32-Integer.parseInt(edit_mask.getText().toString())));
+                getHostPart();
+                text_hosts.setText("Hosts: " + (int)(Math.pow(2, 32-Integer.parseInt(edit_mask.getText().toString()))-2));
             }
             catch (IllegalArgumentException e) {
                 Toast toast = Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT);
@@ -91,10 +94,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    void getHostPart() {
+        host =  (~mask[0] & mip[0]) + "." + (mip[1] & ~mask[1]) + "." + (mip[2] & ~mask[2])
+                + "." + (mip[3] & ~mask[3]);
+        text_hostpart.setText("Host part:"+" "+host);
+    }
+
     void getNetwork() {
         network = (mask[0] & mip[0]) + "." + (mip[1] & mask[1]) + "." + (mip[2] & mask[2])
                 + "." + (mip[3] & mask[3]);
         text_network.setText(getString(R.string.text_network) + " " + network);
+        text_netpart.setText("Red:"+" "+ network);
     }
 
     void getBroadcast() {
@@ -102,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
                 + "." + (mip[3] | wildcard[3]);
         text_broadcast.setText(getString(R.string.text_broadcast) + " " + broadcast);
 
-        text_hosts.setText("Wildcard : "+(wildcard[0])+" . "+(wildcard[1])+" . "+(wildcard[2])+" . "+(wildcard[3]));
+        //text_hosts.setText("Wildcard : "+(wildcard[0])+" . "+(wildcard[1])+" . "+(wildcard[2])+" . "+(wildcard[3]));
     }
+
 }
