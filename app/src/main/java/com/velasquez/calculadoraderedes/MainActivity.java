@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 getNetwork();
                 getBroadcast();
                 getHostPart();
-                text_hosts.setText("Hosts: " + (int)Math.pow(2, 32-Integer.parseInt(edit_mask.getText().toString())-2));
+                text_hosts.setText(""+(int)(Math.pow(2, 32-Integer.parseInt(edit_mask.getText().toString()))-2));
             }
             catch (IllegalArgumentException e) {
                 Toast toast = Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT);
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
             wildcard[1] = (~mask[1] << 24) >>> 24;
             wildcard[2] = (~mask[2] << 24) >>> 24;
             wildcard[3] = (~mask[3] << 24) >>> 24;
-            text_netmask.setText("Mascara de Red: "+mask[0]+" . "+mask[1]+" . "+mask[2]+" . "+mask[3]);
+            text_netmask.setText(mask[0]+" . "+mask[1]+" . "+mask[2]+" . "+mask[3]);
         }
     }
 
@@ -116,22 +116,22 @@ public class MainActivity extends AppCompatActivity {
     void getHostPart() {
         host =  (~mask[0] & mip[0]) + "." + (mip[1] & ~mask[1]) + "." + (mip[2] & ~mask[2])
                 + "." + (mip[3] & ~mask[3]);
-        text_hostpart.setText("Host part:"+" "+host);
+        text_hostpart.setText(host);
     }
 
     //La parte de la red se obtiene haciendo un bitwise-AND entre la máscara y la dirección de la IP
     void getNetwork() {
         network = (mask[0] & mip[0]) + "." + (mip[1] & mask[1]) + "." + (mip[2] & mask[2])
                 + "." + (mip[3] & mask[3]);
-        text_network.setText(getString(R.string.text_network) + " " + network);
-        text_netpart.setText("Red:"+" "+ network);
+        text_network.setText(network);
+        text_netpart.setText(network);
     }
 
     //El broadcast se obtiene con un bitwise-OR entre la IP y el reverso de la máscara, que es la wildcard mask y ya calculamos
     void getBroadcast() {
         broadcast = (wildcard[0] | mip[0]) + "." + (mip[1] | wildcard[1]) + "." + (mip[2] | wildcard[2])
                 + "." + (mip[3] | wildcard[3]);
-        text_broadcast.setText(getString(R.string.text_broadcast) + " " + broadcast);
+        text_broadcast.setText(broadcast);
 
         //text_hosts.setText("Wildcard : "+(wildcard[0])+" . "+(wildcard[1])+" . "+(wildcard[2])+" . "+(wildcard[3]));
     }
